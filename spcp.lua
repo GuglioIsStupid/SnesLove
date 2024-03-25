@@ -1,3 +1,12 @@
+local utf8 = require("utf8")
+
+local function bytetoascii(byte)
+    if byte < 0x20 or byte > 0x7e then
+        return "."
+    end
+    return string.upper(string.char(byte))
+end
+
 player = {
     apu = Apu,
     loadedFile = nil,
@@ -37,20 +46,6 @@ player = {
         if #file < 0x10200 then
             return false
         end
-        local identifier = ""
-        --[[
-            for(let i = 0; i < 33; i++) {
-      identifier += String.fromCharCode(file[i]);
-    }
-    if(identifier !== "SNES-SPC700 Sound File Data v0.30") {
-      log("Unknown SPC header: " + identifier);
-      return false;
-    }
-        ]]
-        for i = 1, 33 do
-            identifier = identifier .. string.char(file[i])
-        end
-        print("Identifier: " .. identifier)
         player.apu.spc.br[0] = bit.bor(file[0x25], bit.lshift(file[0x26], 8))
         player.apu.spc.r[0] = file[0x27]
         player.apu.spc.r[1] = file[0x28]
@@ -58,11 +53,12 @@ player = {
         player.apu.spc.r[3] = file[0x2b]
         player.apu.spc.setP(file[0x2a])
         player.tags.title = ""
-        for i = 1, 32 do
-            if file[0x2e + i] == 0 then
+        --Title found at 0007FC0 for 21 bytes
+        for i = 1, 21 do
+            if file[0x7fc0 + i] == 0 then
                 break
             end
-            player.tags.title = player.tags.title .. string.char(file[0x2e + i])
+            player.tags.title = player.tags.title .. string.char(file[0x7fc0 + i])
         end
         print("Title: " .. player.tags.title)
         player.tags.game = ""
@@ -72,6 +68,7 @@ player = {
             end
             player.tags.game = player.tags.game .. string.char(file[0x4e + i])
         end
+        print("Game: " .. player.tags.game)
         player.tags.dumper = ""
         for i = 1, 16 do
             if file[0x6e + i] == 0 then
@@ -79,6 +76,7 @@ player = {
             end
             player.tags.dumper = player.tags.dumper .. string.char(file[0x6e + i])
         end
+        print("Dumper: " .. player.tags.dumper)
         player.tags.comment = ""
         for i = 1, 32 do
             if file[0x7e + i] == 0 then
@@ -86,14 +84,15 @@ player = {
             end
             player.tags.comment = player.tags.comment .. string.char(file[0x7e + i])
         end
+        print("Comment: " .. player.tags.comment)
         player.tags.artist = ""
-        local artistOff = file[0xd2] == 0 and 0xb0 or 0xb1
         for i = 1, 32 do
-            if file[artistOff + i] == 0 then
+            if file[0xFFDA + i] == 0 then
                 break
             end
-            player.tags.artist = player.tags.artist .. string.char(file[artistOff + i])
+            player.tags.artist = player.tags.artist .. string.char(file[0xFFDA + i])
         end
+        print("Artist: " .. player.tags.artist)
         for i = 1, 0x10000 do
             player.apu.ram[i] = file[0x100 + i]
         end

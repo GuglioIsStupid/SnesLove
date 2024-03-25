@@ -22,17 +22,15 @@ local filename = "test.sfc"
 
 local function loadFile(filename)
     local file = io.open(filename, "rb")
-    if file then
-        local arr = {}
-        for line in file:lines() do
-            for i = 1, #line do
-                arr[#arr + 1] = string.byte(line:sub(i, i))
-            end
+    local arr = {}
+    repeat
+        local str = file:read(4*1024)
+        for c in (str or ''):gmatch('.') do
+            arr[#arr + 1] = c:byte()
         end
-        file:close()
-        return arr
-    end
-    return nil
+    until not str
+    file:close()
+    return arr
 end
 
 local arr = loadFile(filename)
