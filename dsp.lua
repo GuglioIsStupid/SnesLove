@@ -60,6 +60,10 @@ function Dsp.reset()
         Dsp.samplesR[i] = 0
     end
     Dsp.sampleOffset = 0
+    Dsp.channelVolumeL = {0,0,0,0,0,0,0,0}
+    Dsp.channelVolumeR = {0,0,0,0,0,0,0,0}
+    Dsp.gain = {0,0,0,0,0,0,0,0}
+    Dsp.pitch = {0,0,0,0,0,0,0,0}
 
     for i = 1, 7 do
         Dsp.rateNums[i * 5 + 3] = 1
@@ -68,5 +72,9 @@ function Dsp.reset()
 end
 
 function Dsp.write()
+
+end
+
+function Dsp.cycle()
 
 end

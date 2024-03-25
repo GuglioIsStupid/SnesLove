@@ -13,7 +13,7 @@ local paused = false
 local pausedInBg = false
 local logging = false
 
-local filename = "test.sfc"
+local filename = "snes_test_rom.sfc"
 
 --let buf = freader.result;
 --// load rom normally
@@ -56,13 +56,13 @@ local function drawVisual()
     love.graphics.print("Artist:", 20, 65)
     love.graphics.print("Dumper:", 20, 85)
     love.graphics.print("Comment:", 20, 105)
-    --[[ love.graphics.print(player.tags.title, 100, 25)
-    love.graphics.print(player.tags.game, 100, 45)
+    love.graphics.print(player.tags.title, 100, 25)
+   --[[  love.graphics.print(player.tags.game, 100, 45)
     love.graphics.print(player.tags.artist, 100, 65)
     love.graphics.print(player.tags.dumper, 100, 85)
     love.graphics.print(player.tags.comment, 100, 105) ]]
 
-    for i = 0, 7 do
+    for i = 1, 7 do
         love.graphics.setColor(0.25, 0.125, 0.125)
         love.graphics.rectangle("fill", 10 + i * 55 + 5, 470 - 300, 10, 300)
         love.graphics.setColor(0.125, 0.25, 0.125)
@@ -72,16 +72,16 @@ local function drawVisual()
         love.graphics.setColor(0.125, 0.125, 0.25)
         love.graphics.rectangle("fill", 10 + i * 55 + 40, 470 - 300, 10, 300)
         love.graphics.setColor(1, 0.5, 0.5)
-        local scale = --[[ math.abs(player.apu.dsp.channelVolumeL[i]) * 300 / 0x80 ]] 1
+        local scale = math.abs(player.apu.dsp.channelVolumeL[i]) * 300 / 0x80
         love.graphics.rectangle("fill", 10 + i * 55 + 5, 470 - scale, 10, scale)
         love.graphics.setColor(0.5, 1, 0.5)
-        scale = --[[ math.abs(player.apu.dsp.channelVolumeR[i]) * 300 / 0x80 ]] 1
+        scale = math.abs(player.apu.dsp.channelVolumeR[i]) * 300 / 0x80
         love.graphics.rectangle("fill", 10 + i * 55 + 15, 470 - scale, 10, scale)
         love.graphics.setColor(1, 1, 0.5)
-        scale = --[[ player.apu.dsp.gain[i] * 300 / 0x7ff ]] 1
+        scale = player.apu.dsp.gain[i] * 300 / 0x7ff
         love.graphics.rectangle("fill", 10 + i * 55 + 25, 470 - scale, 10, scale)
         love.graphics.setColor(0.5, 0.5, 1)
-        scale = --[[ player.apu.dsp.pitch[i] * 290 / 0x3fff ]] 1
+        scale = player.apu.dsp.pitch[i] * 290 / 0x3fff
         love.graphics.rectangle("fill", 10 + i * 55 + 40, 470 - scale - 10, 10, 10)
     end
     love.graphics.setCanvas()
@@ -95,7 +95,7 @@ local function runFrame()
         until player.apu.spc.cyclesLeft <= 0
         --log(getSpcTrace(player.apu.spc, player.apu.cycles))
     else
-        --player.runFrame()
+        player.runFrame()
     end
     --player.setSamples(audioHandler.sampleBufferL, audioHandler.sampleBufferR, audioHandler.samplesPerFrame)
     --audioHandler.nextBuffer()

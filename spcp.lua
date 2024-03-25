@@ -28,6 +28,7 @@ player = {
         end
     end,
     cycle = function()
+        print("Cycling")
         player.apu.cycle()
     end,
     runFrame = function()
