@@ -1,10 +1,8 @@
---[[
-    let c = el("output");
-c.width = 512;
-c.height = 480;
-let ctx = c.getContext("2d");
-let imgData = ctx.getImageData(0, 0, 512, 480);
-]] -- for love2d
+require("trace")
+require("spc")
+require("dsp")
+require("apu")
+require("spcp")
 love.graphics.setDefaultFilter("nearest", "nearest")
 local c = love.graphics.newCanvas(512, 480)
 local imgData = c:newImageData()
@@ -16,67 +14,40 @@ local pausedInBg = false
 local logging = false
 
 local filename = "test.sfc"
-local file = io.open(filename, "rb")
-local data = file:read("*a")
-file:close()
 
-local arr = {}
-for i = 1, #data do
-    arr[i] = string.byte(data:sub(i, i))
+--let buf = freader.result;
+--// load rom normally
+--let arr = new Uint8Array(buf);
+--loadSpc(arr);
+
+local function loadFile(filename)
+    local file = io.open(filename, "rb")
+    if file then
+        local arr = {}
+        for line in file:lines() do
+            for i = 1, #line do
+                arr[#arr + 1] = string.byte(line:sub(i, i))
+            end
+        end
+        file:close()
+        return arr
+    end
+    return nil
 end
 
+local arr = loadFile(filename)
+
 local function loadSpc(arr)
-    --[[ if player.loadSpc(arr) then
+    if player.loadSpc(arr) then
         if not loaded and not paused then
             loopId = math.floor(love.timer.getTime() * 1000)
             --audioHandler.start()
         end
         loaded = true
-    end ]]
+    end
 end
 
 local function drawVisual()
---[[
-    ctx.fillStyle = "#000000";
-  ctx.fillRect(0, 0, c.width, c.height);
-  // draw text
-  ctx.fillStyle = "#7fff7f";
-  ctx.font = "12pt arial";
-  ctx.fillText("Title:", 20, 25);
-  ctx.fillText("Game:", 20, 45);
-  ctx.fillText("Artist:", 20, 65);
-  ctx.fillText("Dumper:", 20, 85);
-  ctx.fillText("Comment:", 20, 105);
-  ctx.fillText(player.tags.title, 100, 25);
-  ctx.fillText(player.tags.game, 100, 45);
-  ctx.fillText(player.tags.artist, 100, 65);
-  ctx.fillText(player.tags.dumper, 100, 85);
-  ctx.fillText(player.tags.comment, 100, 105);
-  // draw visualisation per channel
-  for(let i = 0; i < 8; i++) {
-    ctx.fillStyle = "#3f1f1f";
-    ctx.fillRect(10 + i * 55 + 5, 470 - 300, 10, 300);
-    ctx.fillStyle = "#1f3f1f";
-    ctx.fillRect(10 + i * 55 + 15, 470 - 300, 10, 300);
-    ctx.fillStyle = "#3f3f1f";
-    ctx.fillRect(10 + i * 55 + 25, 470 - 300, 10, 300);
-    ctx.fillStyle = "#1f1f3f";
-    ctx.fillRect(10 + i * 55 + 40, 470 - 300, 10, 300);
-    ctx.fillStyle = "#ff7f7f";
-    let scale = Math.abs(player.apu.dsp.channelVolumeL[i]) * 300 / 0x80;
-    ctx.fillRect(10 + i * 55 + 5, 470 - scale, 10, scale);
-    ctx.fillStyle = "#7fff7f";
-    scale = Math.abs(player.apu.dsp.channelVolumeR[i]) * 300 / 0x80;
-    ctx.fillRect(10 + i * 55 + 15, 470 - scale, 10, scale);
-    ctx.fillStyle = "#ffff7f";
-    scale = player.apu.dsp.gain[i] * 300 / 0x7ff;
-    ctx.fillRect(10 + i * 55 + 25, 470 - scale, 10, scale);
-    ctx.fillStyle = "#7f7fff";
-    scale = player.apu.dsp.pitch[i] * 290 / 0x3fff;
-    ctx.fillRect(10 + i * 55 + 40, 470 - scale - 10, 10, 10);
-  }
-]]
-
   love.graphics.setCanvas(c)
     love.graphics.clear()   
     love.graphics.setColor(0, 0, 0)
